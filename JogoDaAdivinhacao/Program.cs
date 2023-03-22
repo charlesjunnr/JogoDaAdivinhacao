@@ -2,25 +2,36 @@
 {
     internal class Program
     {
+        #region Passos do Exercício
+        // Passos do exercício:
+        // 1 - Fazer o computador gerar um número aleatório entre 1 e 20; (x)
+        // 2 - Fazer o usuário digitar um número tentanto adivinhá-lo e o computador comparar esse número. (x)
+        // 3 - Dizer se acertou e falar se o número imputado é maior ou menor que o número gerado. (x)
+        // 4 - Limitar as tentativas e criar um menu de tentativas.(x)
+        // 5 - Descrescer a pontuação conforme for errando. (x)
+        // 6 - Mostrar a pontuação final! (x)
+        #endregion
+        #region Variáveis Globais
+        static int numeroDigitado;
+        static bool ehVerdade = true;
+        static int numeroTentativas;
+        static int numeroTentativasMenu;
+        static int pontuacaoJogador = 1000;
+        static int numeroGerado;
+        #endregion
         static void Main(string[] args)
-        {   // Passos do exercício:
-            // 1 - Fazer o computador gerar um número aleatório entre 1 e 20; (x)
-            // 2 - Fazer o usuário digitar um número tentanto adivinhá-lo e o computador comparar esse número. (x)
-            // 3 - Dizer se acertou e falar se o número imputado é maior ou menor que o número gerado. (x)
-            // 4 - Limitar as tentativas e criar um menu de tentativas.(x)
-            // 5 - Descrescer a pontuação conforme for errando. (x)
-            // 6 - Mostrar a pontuação final! (x)
-
-            Random numeroAleatorio = new Random();
-            int numeroGerado = numeroAleatorio.Next(1, 23);
-            int numeroDigitado;
-            bool ehVerdade = true;
-            int numeroTentativas;
-            int numeroTentativasMenu;
-            int pontuacaoJogador = 1000;
-
+        {   
             do
             {
+            GerarNumeroAleatorio();
+            MostrarMenu();
+            GerarDificuldade();
+            ColetarNumeroCompararNumero();
+            } while (ehVerdade == true);
+
+        }
+        static void MostrarMenu()
+        {
             Console.Clear();
             Console.WriteLine("----------------------------------------");
             Console.WriteLine("---------- Adivinhe o número! ----------");
@@ -29,7 +40,14 @@
             Console.WriteLine("- Sendo \n- 1 - Fácil (15 tentativas)            - \n- 2 - Médio (10 tentativas)            - \n- 3 - Difícil (5 tentativas)           -");
             numeroTentativasMenu = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine();
-
+        }
+        static void GerarNumeroAleatorio()
+        {
+            Random numeroAleatorio = new Random();
+            numeroGerado = numeroAleatorio.Next(1, 23);
+        }
+        static void GerarDificuldade()
+        {
             switch (numeroTentativasMenu)
             {
                 case 1:
@@ -44,61 +62,79 @@
                 default:
                     Console.WriteLine("- Número é inválido! Tente novamente - ");
                     Console.ReadLine();
-                    continue;
+                    break;
             }
-            
-                for (int i = numeroTentativas-1; i >= 0; i--)
+        }
+        static void PontosPerdidos()
+        {
+            int pontosPerdidos = Math.Abs((numeroDigitado - numeroGerado) / 2);
+            pontuacaoJogador = pontuacaoJogador - pontosPerdidos;
+        }
+        static void DesejaContinuar()
+        {
+            Console.WriteLine("-      Deseja continuar? Digite S ou N  -");
+            Console.WriteLine();
+            char continuarJogar = Convert.ToChar(Console.ReadLine());
+
+            if (continuarJogar == 'S' || continuarJogar == 's')
+            {
+                ehVerdade = true;
+            }
+            else
+            {
+                ehVerdade = false;
+            }
+        }
+        static void ColetarNumeroCompararNumero()
+        {
+            for (int i = numeroTentativas - 1; i >= 0; i--)
+            {
+
+                SolicitarNumero();
+                PontosPerdidos();
+                if (VerificarAcerto())
                 {
-                    
-                    Console.WriteLine("-     Digite um número entre 1 e 22    -");
-                    numeroDigitado = Convert.ToInt32(Console.ReadLine());
-
-                    int pontosPerdidos = Math.Abs((numeroDigitado - numeroGerado) / 2);
-                    pontuacaoJogador = pontuacaoJogador - pontosPerdidos;
-
-                    if (numeroDigitado == numeroGerado)
-                    {
-                        Console.WriteLine("Você Acertou!!");
-                        Console.WriteLine("Sua pontuação total é de  " + pontuacaoJogador + " pontos. Parabéns!");
-                        break;
-                    }
-                    else
-                    {
-                        if (numeroDigitado > numeroGerado)
-                        {
-                            Console.WriteLine("O número é menor!");
-                            Console.WriteLine();
-                        }
-                        else if (numeroDigitado < numeroGerado)
-                        {
-                            Console.WriteLine("O número é maior!");
-                        }
-
-                        Console.WriteLine("\n- Você tem um total de " + i + " tentativas.    - "); 
-                        Console.WriteLine("- Sua pontuação atual é de  " + pontuacaoJogador + " pontos. -");
-                        Console.WriteLine();
-                    }
-                    
-                    if(i == 0)
-                    {
-                        Console.WriteLine("-      Você perdeu! :(                  -");
-                        Console.WriteLine("-      Deseja continuar? Digite S ou N  -");
-                        Console.WriteLine();
-                        char continuarJogar = Convert.ToChar(Console.ReadLine());
-                        
-                        if (continuarJogar == 'S' || continuarJogar == 's')
-                        {
-                            ehVerdade = true;
-                        }
-                        else
-                        {
-                            ehVerdade = false;
-                        }
-                    }
-                    
+                    Console.WriteLine("Você Acertou! Parabéns!");
+                    PontuacaoTotal();
+                    Console.ReadLine();
+                    i = 0;
                 }
-            } while (ehVerdade == true);
+                else
+                {
+                    if (numeroDigitado > numeroGerado)
+                    {
+                        Console.WriteLine("O número é menor!");
+                        Console.WriteLine();
+                    }
+                    else if (numeroDigitado < numeroGerado)
+                    {
+                        Console.WriteLine("O número é maior!");
+                    }
 
+                    Console.WriteLine("\n- Você tem um total de " + i + " tentativas.    - ");
+                    PontuacaoTotal();
+                    Console.WriteLine();
+                }
+
+                if (i == 0)
+                {
+                    DesejaContinuar();
+                }
+
+            }
+        }
+        static bool VerificarAcerto()
+        {
+            return numeroDigitado == numeroGerado;
+        }
+        static void PontuacaoTotal()
+        {
+            Console.WriteLine("Sua pontuação total é de  " + pontuacaoJogador + " pontos.");
+        }
+        static void SolicitarNumero()
+        {
+            Console.WriteLine("-     Digite um número entre 1 e 22    -");
+            numeroDigitado = Convert.ToInt32(Console.ReadLine());
         }
     }
 }
